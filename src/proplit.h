@@ -287,10 +287,13 @@ PROPAGATE_LITERAL (kissat * solver,
     }
   solver->ticks += ticks;
 
-  while (p != end_watches)
-    *q++ = *p++;
-  SET_END_OF_WATCHES (*watches, q);
-
+  if (q != p)
+  {
+    while (p != end_watches)
+      *q++ = *p++;
+    SET_END_OF_WATCHES (*watches, q);
+  }
+  
 #ifdef HYPER_PROPAGATION
   watch_hyper_delayed (solver, all_watches, delayed);
 #else
