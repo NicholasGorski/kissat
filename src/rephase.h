@@ -26,6 +26,7 @@ void kissat_reset_target_assigned (struct kissat *);
 REPHASE (best, 'B', 0) \
 REPHASE (inverted, 'I', 1) \
 REPHASE (original, 'O', 2) \
-REPHASE (walking, 'W', 3)
+REPHASE (walking, 'W', 3) \
+REPHASE (recombination, 'R', 4)
 
 #endif

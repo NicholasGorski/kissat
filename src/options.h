@@ -94,6 +94,7 @@ OPTION( rephaseinverted, 1, 0, 1, "rephase inverted phase") \
 OPTION( rephaseoriginal, 1, 0, 1, "rephase original phase") \
 OPTION( rephaseprefix, 1, 0, INT_MAX, "initial 'OI' prefix repetition") \
 OPTION( rephasewalking, 1, 0, 1, "rephase walking phase") \
+OPTION( rephaserecombination, 1, 0, 1, "rephase recombination") \
 OPTION( restart, 1, 0, 1, "enable restarts") \
 OPTION( restartint, RESTARTINT_DEFAULT, 1, 1e4, "base restart interval") \
 OPTION( restartmargin, 10, 0, 25, "fast/slow margin in percent") \

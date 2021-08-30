@@ -100,6 +100,35 @@ rephase_walking (kissat * solver)
 }
 
 static char
+rephase_recombination (kissat * solver)
+{
+  const value *const best = solver->phases.best;
+  const value *const end_of_best = best + VARS;
+  value const *b;
+
+  value *const target = solver->phases.target;
+  value *t;
+
+  value *const saved = solver->phases.saved;
+  value *s;
+
+  value tmp_b;
+  value tmp_t;
+
+  for (s = saved, t = target, b = best; b != end_of_best; s++, t++, b++)
+    {
+      tmp_b = *b;
+      tmp_t = *t;
+      if (tmp_b == tmp_t || kissat_pick_bool (&solver->random))
+        *s = tmp_b;
+      else
+        *s = tmp_t;
+    }
+
+  return 'R';
+}
+
+static char
 reset_phases (kissat * solver)
 {
   uint64_t count = solver->rephased.count++;
@@ -108,11 +137,12 @@ reset_phases (kissat * solver)
   const bool original = GET_OPTION (rephaseoriginal);
   const bool best = GET_OPTION (rephasebest);
   const bool walking = GET_OPTION (rephasewalking) && kissat_walking (solver);
+  const bool recombination = GET_OPTION (rephaserecombination);
 
   uint64_t prefix = inverted + original;
   prefix *= GET_OPTION (rephaseprefix);
 
-  char (*functions[6]) (kissat *);
+  char (*functions[7]) (kissat *);
   uint64_t candidates = 0;
 
 #define PUSH1(NAME) \
@@ -148,6 +178,8 @@ reset_phases (kissat * solver)
       PUSH1 (walking);
     }
 
+  PUSH1 (recombination);
+
   char type;
 
   // Since 'enabled.rephase' is true one of the rephase methods is enabled.
@@ -156,7 +188,12 @@ reset_phases (kissat * solver)
   // return 'false'.  As a consequence there is no candidate if only the
   // 'rephasewalking' is true but the formula is too big.
   //
-  if (candidates)
+  const bool force_recombination = false;
+  if (force_recombination)
+    {
+      type = rephase_recombination (solver);
+    }
+  else if (candidates)
     {
       const uint64_t select = count % candidates;
       type = functions[select] (solver);
