@@ -166,6 +166,14 @@ PROPAGATE_LITERAL (kissat * solver,
 	    continue;
 #endif
 	  ticks++;
+
+	  // While we're about to stall fetching *c, we can issue a prefetch for what is
+	  // possibly the next clause we'll observe. This is mostly free, but not always.
+	  const watch next_tail = *(p + 1);
+	  const reference next_ref = next_tail.raw;
+	  clause *const next_c = (clause *)(arena + next_ref);
+	  __builtin_prefetch(next_c, 0, 3);
+
 	  if (c->garbage)
 	    {
 	      q -= 2;
@@ -293,7 +301,7 @@ PROPAGATE_LITERAL (kissat * solver,
       *q++ = *p++;
     SET_END_OF_WATCHES (*watches, q);
   }
-  
+
 #ifdef HYPER_PROPAGATION
   watch_hyper_delayed (solver, all_watches, delayed);
 #else
